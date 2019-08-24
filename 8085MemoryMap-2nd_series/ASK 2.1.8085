@@ -1,0 +1,88 @@
+IN 10H ; apenergopoihsh ths prostasias mnhmhs opws ypodykneietai
+MVI A,00H ; arxikopoihsh tou kataxwrhth A (deikths gia termatismo)
+MVI E,00H ; arxikopoihsh tou kataxwrhth E (ari8moi apo 0-255)
+MVI B,00H ; arxikopoihsh tou kataxwrhth B gia to 2o erwthma
+MVI C,00H ; arxikopoihsh tou kataxwrhth C gia to 2o erwthma
+LXI H,0900H ; fortwnw th diey8ynsh 0900H ston H gia thn apo8hkeysh ari8mwn
+
+QUESTION_A:
+		MOV M,A ; vazw sthn katallhlh 8esh mnhmhs ton katallhlo ari8mo
+		MVI D,08H ; twra 8a checkarw ena ena ta bits tou ari8mou pou
+			    ; pou molis evala gia na dw posous assous exei
+QUESTION_B:
+		RAL
+		JNC NEXT_BIT
+		INX B ; an vrw asso pros8etw sto 2plo kataxwrhth BC 1
+NEXT_BIT:	DCR D ; meiwnw kata 1 ton counter twn bits
+		MOV E,A ; vazw th shiftarismenh timh tou A ston E
+		MOV A,D ; vazw thn timh tou D ston A gia na checkarw posa bits menoun
+		CPI 00H 
+		MOV A,E ; epanaferw ston A th swsth timh tou (shiftarismenh)
+		JNZ QUESTION_B	
+		MOV A,M ; epanaferw ston A thn pragmatika swsth timh tou apo th mnhmh
+			; pou thn apo8hkeysa sthn arxh
+	 	INR A 	; ay3anw ton A, otan 3anaftasei sto 0 8a exw apo8hkeysei
+			; olous tous epi8ymhtous ari8mous			
+		CPI 00H ; checkarw an o A 3anaeftase sto 0
+		JZ QUESTION_C	 ; an nai telos to 1o-2o erwthma
+		INX H ; deixnw sthn epomenh 8esh mnhmhs
+		JNZ QUESTION_A ; an den exw ftasei to 255 synexizw th loopa mou
+QUESTION_C:
+		LXI H,0900H ; fortwnw th diey8ynsh tou prwtou ari8mou mou gia
+				;na tous checkarw olous osous evala sth mnhmh
+		MVI D,00H ; arxikopoiw ton D kataxwrhth
+		MVI E,00H ;arxikopoiw ton E kataxwrhth gia na checkarw plh8os
+			   ; epanalhpsewn
+CHECK:
+		MOV A,M ; fernw ston A ton ka8e ari8mo
+		CPI 10H ;elegxw gia to katw orio pou einai to 10H
+		JZ ADD_D_1 ; an (A)=10H pros8ese 1 sto D
+		JC NEXT_NUM ; an (A)<10H tote phgaine ston epomeno ari8mo
+		CPI 60H ; elegxw gia to anw orio pou einai to 60H
+		JZ ADD_D_1 ;an (A)=60H pros8ese 1 sto D
+		JNC NEXT_NUM ; an (A)>60H phgaine ston epomeno ari8mo
+ADD_D_1:
+		INR D ; alliws aykshse to D kata 1 kai		
+NEXT_NUM:	
+		INX H ;meta checkare ton epomeno
+		INR E ;ay3anw ton E kata 1
+		MOV A,E ; ton vazw ston A gia elegxo
+		CPI 00H ;checkarw an 3anaphge sto 0
+		JNZ CHECK ; an den phge des ton epomeno alliws synexise sto QD
+QUESTION_D:
+		LDA 2000H ; anagnwsh eisodou - diakoptwn
+		RAL
+		RAL
+		RAL
+		RAL
+		RAL ; fernw ta 3 LSB stis 3 MSB 8eseis
+		RAL ; fernw sto C to prwto kata proteraiothta elegxou bit
+		JC LEDS_D
+		RAL ; fernw sto C to 2o kata proteraiothta elegxou bit
+		JC LEDS_C
+		RAL ; fernw sto C to 3o kata proteraiothta elegxou bit
+		JC LEDS_B
+		MVI A,00H ; an den exw kanena anoixto 8elw ta leds kleista
+		CMA
+		STA 3000H ;
+		JMP PROG_END
+
+LEDS_D:	MOV A,D ;pernaw ton D ston A	
+		CMA ; pairnw to symplhrwma tou giati ta leds einai arnhtikhs logikhs
+		STA 3000H	; anavw ta leds
+		JMP PROG_END	;loop
+
+		;antistoixa me ton D anavq ta LEDS gia tis alles periptwseis
+
+LEDS_C:	MOV A,C
+		CMA
+		STA 3000H
+		JMP PROG_END
+
+LEDS_B:	MOV A,B
+		CMA
+		STA 3000H
+		JMP PROG_END
+PROG_END: 
+		JMP QUESTION_D ; gia na synexizei to checkarisma real-time
+		END

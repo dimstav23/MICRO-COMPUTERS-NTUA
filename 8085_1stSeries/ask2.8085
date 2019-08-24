@@ -1,0 +1,47 @@
+IN 10H  		; etsi exw prosvash sth RAM 
+MVI B,01H 
+MVI C,F4H		
+MVI D,01H		
+STC 			
+CMC			
+  
+LDA 2000H
+RAL
+JNC FIRST_LED
+MVI D,80H
+
+
+FIRST_LED: 	MOV A,D
+		CMA
+		STA 3000H
+START:    LDA 2000H   
+	   RAR		  
+	   JC FREEZE	 
+	   RAL         
+	   RAL	 	   
+	   JNC R_L	 
+	   JMP L_R	 
+
+
+FREEZE: MOV A,D              
+	 JMP TURNONLED 
+
+TURNONLED:  MOV D,A	 
+	     CMA
+	     STA 3000H
+	     CALL DELB 
+	     JMP START 
+
+R_L:    MOV A,D		
+	 RAL      		
+        JC RECYCLE		
+        JMP TURNONLED
+
+L_R:   MOV A,D		
+	RRC			
+	JMP TURNONLED
+
+RECYCLE:  SUB A		
+	   ADI 01H 		
+	   JMP TURNONLED
+END

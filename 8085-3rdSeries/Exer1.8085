@@ -1,0 +1,48 @@
+START:		
+LDA 2000H		;fortwsh eisodou
+MOV B,A		;metafora eisodou sto B
+ANI FFH		;and me ton 1111 1111 
+CPI 00H		;kai sygkrish me to 0000 0000 gia na 				;elegksoume an den anavei tipota
+JZ OLA00		;dld an exei dothei o 0000 0000 
+JC EMFANISH	;alliws sunexise parakatw
+
+EMFANISH:
+ 
+MOV A,B		;sunexomenes deksies olisthiseis mexri na
+MVI D,00H		;ftasw se asso
+RAR 			
+MVI C,00H		;fortwsh 0 an einai sthn 1 thesh apo 				;deksia o prwtos assos
+JC LOOPA		;fortwsh kathe fora tou 0 1 11 111 1111 …
+RAR 			;gia thn swsth emfanish
+MVI C,01H		;fortwsh 1 an einai sth deuterh apo deksia
+JC LOOPA 		
+RAR 			
+MVI C,03H		;fortwsh 11 an einai sthn trith apo 				;deksia
+JC LOOPA 		
+RAR 			
+MVI C,07H		; fortwsh 111 an einai sth tetarth apo 				;deksia
+JC LOOPA		
+RAR			
+MVI C,0FH		; fortwsh 1111 an einai sth pempth apo 				;deksia
+JC LOOPA		
+RAR 			
+MVI C,1FH		; fortwsh 11111 an einai sth ekth apo 				;deksia
+JC LOOPA		
+RAR 			
+MVI C,3FH		; fortwsh 111111 an einai sth evdomh apo 			;deksia
+JC LOOPA 		
+RAR 			
+MVI C,7FH		;fortwsh 1111111 an einai sth ogdoh apo 			;deksia
+JC LOOPA		
+
+LOOPA:
+MVI A,00H		;or me to 0 h 1 h 11 h 111…
+ORA C		;gia thn emfanisw olwn twn asswn
+STA 3000H		;apo ton deksiotero kai aristera
+JMP START		;alma sthn arxh
+
+OLA00:
+CMA			;an einai 0000 0000 o arithmos
+STA 3000H		;emfanish ola svhsta 
+JMP START		;ta led
+END
